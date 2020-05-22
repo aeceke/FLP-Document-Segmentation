@@ -50,7 +50,7 @@ cutpoints = init_cutpoints
 # then split image at cutpoints and create PDFs
 while len(cutpoints) > 0:
     n_seg = len(cutpoints)
-    outpath = os.path.join(OUTDIR, 'n_seg_{}'.format(n_seg))
+    outpath = os.path.join(OUTDIR, 'n_seg_{}'.format(n_seg + 1))
     pdfs_to_merge = []
     if not os.path.exists(outpath):
         os.mkdir(outpath)
@@ -64,7 +64,11 @@ while len(cutpoints) > 0:
         # saves a single page PDF
         save_img(pagepath, img_slice)
         pdfs_to_merge.append(pagepath)
-
+    #bottom segment of image
+    img_slice = img_array[pt:, ]
+    pagepath = os.path.join(outpath, 'doc_{0:02}.pdf'.format(n_seg + 1))
+    save_img(pagepath, img_slice)
+    pdfs_to_merge.append(pagepath)
     # saves a multi page PDF
     pdfWriter = PyPDF2.PdfFileWriter()
     # loop over PDFs
@@ -76,9 +80,9 @@ while len(cutpoints) > 0:
             pdfWriter.addPage(pageObj)
         os.remove(f)
     # save merged PDF
-    pdfpath = os.path.join(outpath, 'n_seg_{}.pdf'.format(n_seg))
+    pdfpath = os.path.join(outpath, 'n_seg_{}.pdf'.format(n_seg + 1))
     pdfOutput = open(pdfpath, 'wb')
     pdfWriter.write(pdfOutput)
     pdfOutput.close()
-    print('PDF output ({} pages) {}'.format(n_seg, pdfpath))
+    print('PDF output ({} pages) {}'.format(n_seg + 1, pdfpath))
     cutpoints = {key: value for key, value in cutpoints.items() if value > min(cutpoints.values())}
