@@ -2,6 +2,7 @@ import os
 import sys
 import numpy as np
 from keras.preprocessing.image import load_img, img_to_array, save_img
+import PyPDF2
 
 '''
 To run this script: python disclosure_doc_segmenting.py <image file path> <directory path to save PDF output>
@@ -50,6 +51,7 @@ cutpoints = init_cutpoints
 while len(cutpoints) > 0:
     n_seg = len(cutpoints)
     outpath = os.path.join(OUTDIR, 'n_seg_{}'.format(n_seg))
+    pdfs_to_merge = []
     if not os.path.exists(outpath):
         os.mkdir(outpath)
     for (i, pt) in enumerate(cutpoints.keys()):
@@ -58,5 +60,25 @@ while len(cutpoints) > 0:
         else:
             init_pt = list(cutpoints.keys())[i-1]
         img_slice = img_array[init_pt:pt,]
-        save_img(os.path.join(outpath, 'doc_{0:02}.pdf'.format(i)), img_slice)
+        pagepath = os.path.join(outpath, 'doc_{0:02}.pdf'.format(i))
+        # saves a single page PDF
+        save_img(pagepath, img_slice)
+        pdfs_to_merge.append(pagepath)
+
+    # saves a multi page PDF
+    pdfWriter = PyPDF2.PdfFileWriter()
+    # loop over PDFs
+    for f in pdfs_to_merge:
+        pdfFileObj = open(f,'rb')
+        pdfReader = PyPDF2.PdfFileReader(pdfFileObj)
+        for pageNum in range(pdfReader.numPages):
+            pageObj = pdfReader.getPage(pageNum)
+            pdfWriter.addPage(pageObj)
+        os.remove(f)
+    # save merged PDF
+    pdfpath = os.path.join(outpath, 'n_seg_{}.pdf'.format(n_seg))
+    pdfOutput = open(pdfpath, 'wb')
+    pdfWriter.write(pdfOutput)
+    pdfOutput.close()
+    print('PDF output ({} pages) {}'.format(n_seg, pdfpath))
     cutpoints = {key: value for key, value in cutpoints.items() if value > min(cutpoints.values())}
