@@ -1,7 +1,11 @@
 import os
 import sys
 import numpy as np
-from keras.preprocessing.image import load_img, img_to_array, array_to_img, save_img
+from keras.preprocessing.image import load_img, img_to_array, save_img
+
+'''
+To run this script: python disclosure_doc_segmenting.py <image file path> <directory path to save PDF output>
+'''
 
 args = sys.argv
 IMAGEPATH = args[1] #filepath of image
@@ -54,5 +58,5 @@ while len(cutpoints) > 0:
         else:
             init_pt = list(cutpoints.keys())[i-1]
         img_slice = img_array[init_pt:pt,]
-        save_img(os.path.join(outpath, 'test{}.pdf'.format(i)), img_slice)
+        save_img(os.path.join(outpath, 'doc_{0:02}.pdf'.format(i)), img_slice)
     cutpoints = {key: value for key, value in cutpoints.items() if value > min(cutpoints.values())}
