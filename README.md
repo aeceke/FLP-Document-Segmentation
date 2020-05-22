@@ -1,6 +1,6 @@
 This repository contains code for segmenting judiciary financial disclosure documents. The script, disclosure_doc_segmenting.py, takes 2 command line arguments, the image file path, and an output directory path. The output is a series of PDF documents, created by segmenting the TIFF image, and iterates over a decreasing number of segmentation points in the image.
 
-To run this script: python disclosure_doc_segmenting.py \<image file path\> \<directory path to save PDF output\>
+To run this script: '''python disclosure_doc_segmenting.py \<image file path\> \<directory path to save PDF output\>'''
 
 Example: python disclosure_doc_segmenting.py '/Users/andreaekey/Desktop/FLP/Ungaro-U.  J3. 11. FLS_Resp_R_18.tiff' '/Users/andreaekey/Desktop/FLP'
 
